@@ -265,7 +265,8 @@ export class CustomerAuthService implements IAuthService {
     }
 
     async refreshToken(refreshToken: string): Promise<LoginResponseDto> {
-        const payload = this.getPayload(refreshToken);
+        try {
+            const payload = this.getPayload(refreshToken);
         const { email, refreshToken: _refreshToken } = payload;
         const customer = await this.customerRepository.getCustomerByEmail(email);
         if (!customer) {
@@ -286,6 +287,10 @@ export class CustomerAuthService implements IAuthService {
         response.accessToken = newAccessToken;
         response.refreshToken = refreshToken;
         return response;
+        } catch (e) {
+            this.logger.error(`${ErrorMessages.INVALID_REFRESH_TOKEN}: ${e}`);
+            throw new UnauthorizedException(ErrorMessages.INVALID_REFRESH_TOKEN);
+        }
     }
 
     async logout(refreshToken: string): Promise<boolean> {

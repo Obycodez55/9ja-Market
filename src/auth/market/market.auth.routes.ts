@@ -13,6 +13,8 @@ import { VerifyEmailRequestByCodeDto, VerifyEmailRequestByTokenDto } from "../dt
 import { ForgotPasswordRequestDto } from "../dtos/forgot-password-request.dto";
 import { ResetPasswordRequestDto } from "../dtos/reset-password-request.dto";
 import passport from "passport";
+import { RefreshTokenDto } from "../dtos/refresh-token.dto";
+import { ExchangeTokenDto } from "../dtos/exchange-token.dto";
 
 const router = Router();
 const validator = new Validator();
@@ -52,7 +54,7 @@ router.post('/forgot-password', validator.single(ForgotPasswordRequestDto), mark
 router.put('/reset-password', validator.single(ResetPasswordRequestDto), marketAuthController.resetPassword);
 
 // Refresh Access Token Route
-router.post('/refresh-token', marketAuthController.refreshToken);
+router.post('/refresh-token', validator.single(RefreshTokenDto), marketAuthController.refreshToken);
 
 // Google Auth Initiator Route
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], session: false, state: 'market' }));
@@ -61,9 +63,9 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 router.get('/google/callback', marketAuthController.googleAuth);
 
 // Exchange Google token
-router.get("/exchange-token", marketAuthController.exchangeToken)
+router.get("/exchange-token",validator.single(ExchangeTokenDto, "query"), marketAuthController.exchangeToken)
 
 // Logout Route
-router.delete('/logout', marketAuthController.logout);
+router.delete('/logout',validator.single(RefreshTokenDto), marketAuthController.logout);
 
 export default router;
