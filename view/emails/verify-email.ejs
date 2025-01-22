@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p>Dear user,</p>
+    <p>Your verification code is: <strong><%= verificationCode %></strong></p>
+    <% if (link) { %>
+        <p>You can also verify your email by clicking the following link: <a href="<%= link %>">Verify Email</a></p>
+    <% } %>
+    <p>Thank you!</p>
+</body>
+</html>

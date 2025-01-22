@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { AddressCreateDto } from "../../dtos/address-create.dto";
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsNotEmpty, IsString, ValidateNested } from "class-validator";
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsEmail, IsNotEmpty, IsString, ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 interface MerchantUpdateInput extends Omit<Prisma.MerchantUpdateInput, "phoneNumbers" | "addresses"> {
@@ -9,6 +9,10 @@ interface MerchantUpdateInput extends Omit<Prisma.MerchantUpdateInput, "phoneNum
 }
 
 export class MerchantUpdateDto implements MerchantUpdateInput{
+    @IsEmail()
+    @IsNotEmpty()
+    email?: string
+
     @IsString()
     @IsNotEmpty()
     brandName?: string | Prisma.StringFieldUpdateOperationsInput | undefined;

@@ -42,7 +42,7 @@ export class CustomerController {
 
     updateCustomer: RequestHandler = async (request: Request, response: Response, next: NextFunction) => {
         try {
-            const result = await this.customerService.updateCustomer(request.params.id, request.body);
+            const result = await this.customerService.updateCustomer(request.params.customerId, request.body);
             this.formatCustomerData(result);
             const resObj = new ResponseDto(ResponseStatus.SUCCESS, SuccessMessages.UPDATE_CUSTOMER_SUCCESS, result);
             return response.status(HttpStatus.OK).send(resObj);
@@ -60,7 +60,7 @@ export class CustomerController {
 
     deleteCustomer: RequestHandler = async (request: Request, response: Response, next: NextFunction) => {
         try {
-            await this.customerService.deleteCustomer(request.params.id);
+            await this.customerService.deleteCustomer(request.params.customerId);
             const resObj = new ResponseDto(ResponseStatus.SUCCESS, SuccessMessages.DELETE_CUSTOMER_SUCCESS);
             return response.status(HttpStatus.NO_CONTENT).send(resObj);
         } catch (e) {

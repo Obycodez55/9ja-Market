@@ -1,5 +1,5 @@
 import path from 'path';
-import { EmailPaths } from '../../constants/email.enum';
+import { EmailPaths, EmailSubjects } from '../../constants/email.enum';
 import { WinstonLogger } from '../logger/winston.logger';
 import { IEmailService } from './email.service.interface';
 import { readdirSync } from 'fs';
@@ -16,7 +16,6 @@ export class EmailService implements IEmailService {
         // Load all providers
         const providerPath = path.join(__dirname, 'providers');
         const providerFiles = readdirSync(providerPath);
-
         // Iterate over all files in the providers directory
         for (const file of providerFiles) {
             if (file.endsWith('.provider.ts') || file.endsWith('.provider.js')) {
@@ -28,7 +27,7 @@ export class EmailService implements IEmailService {
         }
     }
 
-    async sendMail({ to, subject, options }: { to: string; subject: string; options: { template: EmailPaths; data: { [key: string]: any; }; }; }): Promise<boolean> {
+    async sendMail({ to, subject, options }: { to: string; subject: EmailSubjects; options: { template: EmailPaths; data: { [key: string]: any; }; }; }): Promise<boolean> {
         for (const provider of this.providers) {
             try {
                 await provider.sendMail({ to, subject, options });

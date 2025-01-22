@@ -14,7 +14,13 @@ export class ProductRepository {
     findAll(): Promise<Product[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const products = await this.productDelegate.findMany();
+                const products = await this.productDelegate.findMany({
+                    include: {
+                        displayImage: true,
+                        images: true,
+                        ratings: true
+                    }
+                });
                 resolve(products);
             } catch (error) {
                 reject(error);
@@ -28,8 +34,9 @@ export class ProductRepository {
                 const product = await this.productDelegate.findUnique({
                     where: { id },
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(product);
@@ -42,12 +49,40 @@ export class ProductRepository {
     getMerchantProducts(merchantId: string): Promise<Product[]> {
         return new Promise(async (resolve, reject) => {
             try {
-                const products = await this.productDelegate.findMany({ where: { merchantId } });
+                const products = await this.productDelegate.findMany({
+                    where: { merchantId }, include: {
+                        displayImage: true,
+                        images: true,
+                        ratings: true
+                    }
+                });
                 resolve(products);
             } catch (error) {
                 reject(error);
             }
         });
+    }
+
+    getMarketProducts(marketId: string): Promise<Product[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const products = await this.productDelegate.findMany({
+                    where: {
+                        merchant: {
+                            marketId
+                        }
+                    },
+                    include: {
+                        displayImage: true,
+                        images: true,
+                        ratings: true
+                    }
+                });
+                resolve(products);
+            } catch (error) {
+                reject(error);
+            }
+        })
     }
 
     getFeaturedProducts(merchantId: string): Promise<Product[]> {
@@ -57,6 +92,11 @@ export class ProductRepository {
                     where: {
                         merchantId,
                         NOT: { featuredDate: null }
+                    },
+                    include: {
+                        displayImage: true,
+                        images: true,
+                        ratings: true
                     },
                     orderBy: {
                         featuredDate: 'desc'
@@ -76,8 +116,9 @@ export class ProductRepository {
                     where: { id },
                     data: product,
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(updatedProduct);
@@ -110,8 +151,9 @@ export class ProductRepository {
                         }
                     },
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(newProduct);
@@ -146,8 +188,9 @@ export class ProductRepository {
                         }
                     },
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(product);
@@ -170,8 +213,9 @@ export class ProductRepository {
                         }
                     },
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(product);
@@ -192,8 +236,9 @@ export class ProductRepository {
                         }
                     },
                     include: {
+                        displayImage: true,
                         images: true,
-                        displayImage: true
+                        ratings: true
                     }
                 });
                 resolve(product);

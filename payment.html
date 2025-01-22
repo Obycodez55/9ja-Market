@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quickteller Inline Checkout Test</title>
+</head>
+<body>
+    <h1>Quickteller Inline Checkout Test</h1>
+    <button id="payButton">Pay Now</button>
+
+    <script src="https://newwebpay.qa.interswitchng.com/inline-checkout.js"></script>
+    <script>
+        // Callback function to handle payment response
+        function paymentCallback(response) {
+            console.log("Payment Response:", response);
+            alert(`Payment Status: ${response.ResponseDescription}`);
+        }
+
+        // Sample payment request object
+        const samplePaymentRequest = {
+            merchant_code: "MX6072",  // Your merchant code
+            pay_item_id: "9405967",  // Your pay item ID
+            txn_ref: `txn_${Date.now()}`, // Unique transaction reference
+            site_redirect_url: "https://example.com/payment-response", // Redirect URL
+            amount: 50000, // Amount in kobo (50000 = 500.00 NGN)
+            currency: 566, // Currency code (566 = NGN)
+            cust_name: "John Doe", // Customer name (optional)
+            cust_email: "john.doe@example.com", // Customer email
+            cust_id: "12345", // Customer ID (optional)
+            onComplete: paymentCallback, // Callback function
+            mode: 'TEST' // Test mode
+        };
+
+        // Trigger payment on button click
+        document.getElementById('payButton').addEventListener('click', function() {
+            window.webpayCheckout(samplePaymentRequest);
+        });
+    </script>
+</body>
+</html>

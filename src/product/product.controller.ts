@@ -118,6 +118,25 @@ export class ProductController {
         }
     }
 
+
+        /**
+* Get Market Products
+* @param request {Request}
+* @param response (Response}
+* @param next {NextFunction}
+*/
+
+    getMarketProducts: RequestHandler = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const result = await this.productService.getMarketProducts(request.params.marketId);
+            result.forEach((product) => this.formatProductData(product));
+            const resObj = new ResponseDto(ResponseStatus.SUCCESS, SuccessMessages.GET_MARKET_PRODUCTS_SUCCESS, result);
+            return response.status(HttpStatus.OK).send(resObj);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     /**
  * Update Product
  * @param request {Request}

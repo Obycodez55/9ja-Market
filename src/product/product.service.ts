@@ -48,6 +48,19 @@ export class ProductService {
         }
     }
 
+    async getMarketProducts(marketId: string): Promise<Product[]> {
+        try {
+            const products = await this.productRepository.getMarketProducts(marketId);
+            return products;
+        } catch (e) {
+            if (e instanceof BaseException) {
+                throw e;
+            }
+            this.logger.error(`${ErrorMessages.GET_MARKET_PRODUCTS_FAILED}: ${e}`);
+            throw new InternalServerException(ErrorMessages.GET_MARKET_PRODUCTS_FAILED);
+        }
+    }
+
     async createProduct(merchantId: string, productData: ProductCreateDto, files: Express.Multer.File[]): Promise<Product> {
         try {
             if (!files || files.length < 1) {

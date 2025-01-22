@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -49,7 +49,7 @@ model Merchant {
   passwordResetCode     String?
   displayImage          String?
   refreshToken          String?
-  market                Market?                 @relation(fields: [marketId], references: [id])
+  market                Market?                @relation(fields: [marketId], references: [id])
   merchantCategories    MerchantCategory[]
   addresses             Address[]
   phoneNumbers          PhoneNumber[]
@@ -64,47 +64,60 @@ model Merchant {
 }
 
 model Market {
-  id          String     @id @default(uuid())
-  name        String     @unique
-  description String?
-  address     String
-  city        String?
-  state       String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
-  merchants   Merchant[]
+  id           String     @id @default(uuid())
+  name         String     @unique
+  displayImage String?
+  description  String?
+  address      String
+  city         String?
+  state        String?
+  isMall       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  merchants    Merchant[]
 }
 
 model Product {
-  id           String          @id @default(uuid())
-  name         String
-  details      String
-  description  String
-  price        Float
-  prevPrice    Float
-  stock        Int
-  displayImage ProductImage? @relation("DisplayImage", fields: [displayImageId], references: [id])
-  featuredDate DateTime?
-  images       ProductImage[] @relation("ProductImages")
-  ratings      Rating[]
-  cart         CartProduct[]
-  category     ProductCategory
-  merchant     Merchant        @relation(fields: [merchantId], references: [id])
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
-  deletedAt    DateTime?
-  merchantId   String
-  displayImageId String? @unique
+  id             String          @id @default(uuid())
+  name           String
+  details        String
+  description    String
+  price          Float
+  prevPrice      Float?
+  stock          Int
+  displayImage   ProductImage?   @relation("DisplayImage", fields: [displayImageId], references: [id])
+  featuredDate   DateTime?
+  images         ProductImage[]  @relation("ProductImages")
+  ratings        Rating[]
+  cart           CartProduct[]
+  category       ProductCategory
+  merchant       Merchant        @relation(fields: [merchantId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  merchantId     String
+  displayImageId String?         @unique
+  Ad             Ad[]
 
   @@index([name])
+}
+
+model Ad {
+  id        String    @id @default(uuid())
+  level     Int
+  paidFor   Boolean   @default(false)
+  product   Product   @relation(fields: [productId], references: [id])
+  productId String
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Order {
   id            String        @id @default(uuid())
   customer      Customer      @relation(fields: [customerId], references: [id])
   products      CartProduct[]
-  transaction   Transaction   @relation(fields: [transactionId], references: [id])
   status        OrderStatus
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
@@ -115,15 +128,15 @@ model Order {
 }
 
 model Transaction {
-  id         String    @id @default(uuid())
-  merchant   Merchant  @relation(fields: [merchantId], references: [id])
-  order      Order?
+  id         String        @id @default(uuid())
+  merchant   Merchant      @relation(fields: [merchantId], references: [id])
   amount     Float
-  status     String
-  date       DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  status     PaymentStatus
+  for        PaymentFor
+  reference  String
+  date       DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
   deletedAt  DateTime?
-  customerId String
   merchantId String
 }
 
@@ -169,14 +182,14 @@ model Address {
 }
 
 model ProductImage {
-  id        String    @id @default(uuid())
-  product   Product?   @relation("ProductImages",fields: [productId], references: [id])
-  productDisplay Product? @relation("DisplayImage")
-  url       String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  productId String?
+  id             String    @id @default(uuid())
+  product        Product?  @relation("ProductImages", fields: [productId], references: [id])
+  productDisplay Product?  @relation("DisplayImage")
+  url            String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  productId      String?
 }
 
 model PhoneNumber {
@@ -268,4 +281,16 @@ enum MerchantCategory {
   HARDWARE
   SPORTS
   TOYS
+}
+
+enum PaymentFor {
+  ADVERTISEMENT
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  INCOMPLETE
+  INITIALIZED
+  PENDING
 }

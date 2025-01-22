@@ -27,6 +27,8 @@ const merchantAuthGaurd = new MerchantAuthGaurd(merchantRepository, logger, jwtS
 
 router.get("/:merchantId", validator.single(IdDto, "params"), merchantAuthGaurd.authorise({ id: true }), merchantController.getMerchantById);
 
+router.get("/market/:marketId", validator.single(IdDto, "params"), merchantController.getMerchantsByMarket);
+
 router.put("/:merchantId", validator.multiple([
     { schema: IdDto, source: "params" },
     { schema: MerchantUpdateDto, source: "body" }

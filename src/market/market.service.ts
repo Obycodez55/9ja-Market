@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { ErrorMessages } from "../constants/error-messages.enum";
 import { MarketRepository } from "../repositories/market.repository";
 import { InternalServerException } from "../utils/exceptions/internal-server.exception";
@@ -12,13 +13,36 @@ export class MarketService {
         private readonly logger: WinstonLogger
     ) { }
 
-    async createMarket(market: MarketCreateDto) {
+    async createMarket(market: MarketCreateDto, file?: Express.Multer.File) {
         try {
+            if (file) {
+                (market as Prisma.MarketCreateInput).displayImage = file.path;
+            }
             const createdMarket = await this.marketRepository.createMarket(market);
             return createdMarket;
         } catch (e) {
             this.logger.error(`${ErrorMessages.CREATE_MARKET_FAILED}: ${e}`);
             throw new InternalServerException(ErrorMessages.CREATE_MARKET_FAILED);
+        }
+    }
+
+    async findMarkets() {
+        try {
+            const markets = await this.marketRepository.findAllMarkets();
+            return markets;
+        } catch (e) {
+            this.logger.error(`${ErrorMessages.GET_MARKETS_FAILED}: ${e}`);
+            throw new InternalServerException(ErrorMessages.GET_MARKETS_FAILED);
+        }
+    }
+
+    async findAllMalls() {
+        try {
+            const malls = await this.marketRepository.findAllMalls();
+            return malls;
+        } catch (e) {
+            this.logger.error(`${ErrorMessages.GET_MALLS_FAILED}: ${e}`);
+            throw new InternalServerException(ErrorMessages.GET_MALLS_FAILED);
         }
     }
 
@@ -58,8 +82,11 @@ export class MarketService {
         }
     }
 
-    async updateMarket(marketId: string, marketUpdateDto: MarketUpdateDto) {
+    async updateMarket(marketId: string, marketUpdateDto: MarketUpdateDto, file?: Express.Multer.File) {
         try {
+            if (file) {
+                (marketUpdateDto as Prisma.MarketUpdateInput).displayImage = file.path;
+            }
             const updatedMarket = await this.marketRepository.updateMarket(marketId, marketUpdateDto);
             return updatedMarket;
         } catch (e) {

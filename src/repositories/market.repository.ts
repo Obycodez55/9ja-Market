@@ -9,6 +9,32 @@ export class MarketRepository {
         this.marketDelegate = databaseService.market;
     }
 
+    findAllMarkets(): Promise<Market[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const markets = await this.marketDelegate.findMany({
+                    where: { isMall: false }
+                });
+                resolve(markets);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    findAllMalls(): Promise<Market[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const malls = await this.marketDelegate.findMany({
+                    where: { isMall: true }
+                });
+                resolve(malls);
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     findNames(): Promise<string[]> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -74,5 +100,5 @@ export class MarketRepository {
             }
         });
     }
-    
+
 }

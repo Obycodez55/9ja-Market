@@ -39,6 +39,30 @@ export class MerchantRepository implements IMerchantRepository {
         })
     }
 
+    getMarketMerchants(marketId: string): Promise<Merchant[]> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const merchants = await this.merchantDelegate.findMany({
+                    where: { marketId },
+                    include: {
+                        addresses: true,
+                        phoneNumbers: true,
+                        products: {
+                            include: {
+                                displayImage: true,
+                                images: true,
+                                ratings: true
+                            }
+                        }
+                    }
+                });
+                resolve(merchants)
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
+
     getMerchantByEmail(email: string, options: { products: boolean } = { products: false }): Promise<Merchant | null> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -75,7 +99,7 @@ export class MerchantRepository implements IMerchantRepository {
         })
     }
 
-    getMerchantByGoogleId(googleId: string): Promise<Merchant | null>{
+    getMerchantByGoogleId(googleId: string): Promise<Merchant | null> {
         return new Promise(async (resolve, reject) => {
             try {
                 const merchant = await this.merchantDelegate.findUnique({

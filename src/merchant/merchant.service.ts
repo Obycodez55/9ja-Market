@@ -9,6 +9,7 @@ import { NotFoundException } from "../utils/exceptions/not-found.exception";
 import { WinstonLogger } from "../utils/logger/winston.logger";
 import { MerchantUpdateDto } from "./dtos/merchant-update.dto";
 import { MarketRepository } from '../repositories/market.repository';
+import { UnauthorizedException } from "../utils/exceptions/unauthorized.exception";
 
 export class MerchantService {
     constructor(
@@ -32,15 +33,33 @@ export class MerchantService {
         }
     }
 
+    async getMerchantsByMarketId(marketId: string) {
+        try {
+            const merchants = await this.merchantRepository.getMarketMerchants(marketId);
+            return merchants;
+        } catch (error) {
+            this.logger.error(`${ErrorMessages.GET_MERCHANTS_BY_MARKET_ID_FAILED}: ${error}`);
+            throw new InternalServerException(ErrorMessages.GET_MERCHANTS_BY_MARKET_ID_FAILED);
+        }
+    }
+
     async updateMerchant(merchantId: string, merchantUpdateDto: MerchantUpdateDto) {
         try {
-            const { phoneNumbers, addresses, brandName, marketName } = merchantUpdateDto;
+            const { phoneNumbers, addresses, brandName, marketName , email} = merchantUpdateDto;
             let merchant: Prisma.MerchantUpdateInput = {};
             // Update Brand Name
             if (brandName) {
                 merchant.brandName = brandName;
             }
-
+            if (email) {
+                const emailInstance = await this.merchantRepository.getMerchantByEmail(email);
+                if (emailInstance && emailInstance.id !== merchantId) {
+                    throw new UnauthorizedException(ErrorMessages.EMAIL_EXISTS);
+                }
+                merchant.email = email;
+                merchant.emailVerifiedAt = null;
+                merchant.googleId = null;
+            }
             // Update Phone Numbers
             if (phoneNumbers) {
                 const mappedPhoneNumbers = DataFormatterHelper.formatPhoneNumbers(phoneNumbers);

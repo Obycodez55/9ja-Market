@@ -6,6 +6,7 @@ import CustomerRouter from './customer/customer.routes';
 import MerchantRouter from './merchant/merchant.routes';
 import MarketRouter from './market/market.routes';
 import ProductRouter from './product/product.routes';
+import AdRouter from './ad/ad.routes';
 
 const router = Router();
 
@@ -28,6 +29,8 @@ router.use('/market', MarketRouter);
 // Product Module
 router.use('/product', ProductRouter);
 
+// Ad Module
+router.use('/ad', AdRouter); 
 
 
 export default router;

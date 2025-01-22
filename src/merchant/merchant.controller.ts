@@ -32,6 +32,24 @@ export class MerchantController {
         }
     }
 
+
+    /**
+    * Get Merchants by Market
+    * @param request {Request}
+    * @param response (Response}
+    * @param next {NextFunction}
+    */
+    getMerchantsByMarket: RequestHandler = async (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const result = await this.merchantService.getMerchantsByMarketId(request.params.marketId);
+            result.forEach(this.formatMerchantData);
+            const resObj = new ResponseDto(ResponseStatus.SUCCESS, SuccessMessages.GET_MERCHANTS_BY_MARKET_SUCCESS, result);
+            return response.status(HttpStatus.OK).send(resObj);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     /**
 * Update Merchant Details
 * @param request {Request}
